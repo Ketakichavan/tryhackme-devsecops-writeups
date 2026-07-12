@@ -16,6 +16,11 @@ Before any exploitation could begin, I needed to connect to the room's isolated 
 - Since the lab uses internal hostnames (`gitlab.tryhackme.loc`, `jenkins.tryhackme.loc`) rather than public DNS, I manually added both hostnames and their corresponding IPs to `/etc/hosts` so my browser and tools could resolve them.
 - Registered with "Mother" — the lab's SSH-based tracking system — which is used throughout the room to log in, submit proof of each successful compromise, and receive flags as rewards for completing objectives.
 
+<img width="1732" height="897" alt="01-network-diagram" src="https://github.com/user-attachments/assets/22c6254b-d1fb-4a62-9b38-a525b9787e13" />
+
+<img width="1917" height="851" alt="02-mother-registration" src="https://github.com/user-attachments/assets/67c6275b-62c2-4087-8b2f-b13a275158e9" />
+
+
 *Suggested screenshot: the network topology diagram, and the Mother registration terminal output.*
 
 ---
@@ -34,6 +39,14 @@ To understand how a real CI/CD pipeline operates before trying to break one, I f
 - Triggered the pipeline by committing a small change to the README file, then watched the pipeline execute through all three stages in GitLab's Pipelines view.
 - Verified successful deployment by browsing to the locally-hosted PHP application, which confirmed the entire pipeline — from commit to live deployment — worked end-to-end.
 
+<img width="1390" height="865" alt="03-runner-registration-terminal" src="https://github.com/user-attachments/assets/ca15b78c-3e7b-4810-9cd1-23afca761741" />
+<img width="1392" height="910" alt="04-runner-untagged-jobs" src="https://github.com/user-attachments/assets/2b6baac7-5c8b-484d-86dc-c62223ba1a18" />
+
+<img width="1387" height="911" alt="05-pipeline-passed" src="https://github.com/user-attachments/assets/eb900342-a1dd-417a-acf7-81cd68ab0052" />
+
+
+
+
 *Suggested screenshots: runner registration success in the terminal, the "Can run untagged jobs: Yes" confirmation page, the pipeline showing all green checkmarks, and the deployed Timekeep login page.*
 
 ---
@@ -49,6 +62,9 @@ This task explored a subtle but common organizational mistake: leaving GitLab re
 - Extracted all downloaded repositories and searched their contents recursively for common secret-related keywords (`secret`, `key`, `api`, etc.).
 - Found a hardcoded API key inside a `Dockerfile` belonging to a "Mobile App" project — a secret that should have been injected securely via CI/CD variables, not committed directly into source code.
 - This demonstrated how source code intended to be internal-only can still leak sensitive credentials the moment access control is even slightly too permissive.
+
+<img width="1917" height="867" alt="07-access-tokens-page" src="https://github.com/user-attachments/assets/6b7a8e45-0ed6-4b62-892e-9d8bf5598b10" />
+
 
 *Suggested screenshots: the Personal Access Token creation page, and the terminal output showing the enumerator script running and the discovered API key.*
 
@@ -114,6 +130,12 @@ This task looked at what happens when development (DEV) and production (PROD) en
 - Since I had direct commit access to the DEV branch (even though it still required a self-approvable merge request, similar to the previous task), I modified its `.gitlab-ci.yml` to run the same reverse-shell payload technique used earlier.
 - Once the merge request was approved and merged, the shared runner executed my payload, and I obtained a shell on the same host responsible for production deployments — despite only having "development" level access.
 - This demonstrated why environment segregation must extend to the infrastructure layer, not just source code branches and permissions.
+
+<img width="1402" height="866" alt="13-environments-page" src="https://github.com/user-attachments/assets/666d222a-ca10-4437-8f34-ecf72dfed3f2" />
+
+<img width="1397" height="862" alt="14-production-job-log" src="https://github.com/user-attachments/assets/a015aaa8-232a-4ac2-ac19-207aefc7da8e" />
+
+
 
 *Suggested screenshots: the Environments page showing both production and staging, and the production job log showing the runner details alongside the `API_KEY` reference.*
 
