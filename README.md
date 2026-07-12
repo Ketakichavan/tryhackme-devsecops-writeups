@@ -21,8 +21,6 @@ Before any exploitation could begin, I needed to connect to the room's isolated 
 <img width="1917" height="851" alt="02-mother-registration" src="https://github.com/user-attachments/assets/67c6275b-62c2-4087-8b2f-b13a275158e9" />
 
 
-*Suggested screenshot: the network topology diagram, and the Mother registration terminal output.*
-
 ---
 
 ## 2. Building a CI/CD Pipeline from Scratch
@@ -45,10 +43,6 @@ To understand how a real CI/CD pipeline operates before trying to break one, I f
 <img width="1387" height="911" alt="05-pipeline-passed" src="https://github.com/user-attachments/assets/eb900342-a1dd-417a-acf7-81cd68ab0052" />
 
 
-
-
-*Suggested screenshots: runner registration success in the terminal, the "Can run untagged jobs: Yes" confirmation page, the pipeline showing all green checkmarks, and the deployed Timekeep login page.*
-
 ---
 
 ## 3. Source Code Security — Enumerating Exposed Repositories
@@ -64,9 +58,6 @@ This task explored a subtle but common organizational mistake: leaving GitLab re
 - This demonstrated how source code intended to be internal-only can still leak sensitive credentials the moment access control is even slightly too permissive.
 
 <img width="1917" height="867" alt="07-access-tokens-page" src="https://github.com/user-attachments/assets/6b7a8e45-0ed6-4b62-892e-9d8bf5598b10" />
-
-
-*Suggested screenshots: the Personal Access Token creation page, and the terminal output showing the enumerator script running and the discovered API key.*
 
 ---
 
@@ -87,9 +78,6 @@ Here I explored a "toxic combination" in CI/CD configuration: pipelines that aut
 <img width="1917" height="306" alt="10-jagent-whoami-id" src="https://github.com/user-attachments/assets/5f6f8dc2-0b73-446c-ba61-e4fd6154810e" />
 
 
-
-*Suggested screenshots: the merge request in a "Ready to merge" state, and the netcat listener showing "Connection received."*
-
 ---
 
 ## 5. Build Server Security — Attacking Jenkins Directly
@@ -104,9 +92,6 @@ Rather than exploiting the pipeline logic, this task targeted the Jenkins build 
 - Ran the exploit, which logged into Jenkins, obtained a CSRF token, uploaded a staged payload through the script console, and opened a fully-privileged Meterpreter session directly on the Jenkins server — demonstrating that weak build server credentials can lead to complete compromise of the infrastructure orchestrating every pipeline in the organization.
 
 <img width="1102" height="862" alt="11-jenkins-dashboard-login" src="https://github.com/user-attachments/assets/b498ed13-8973-46f1-9a12-6acbcf00d50f" />
-
-
-*Suggested screenshots: the Jenkins dashboard after logging in with default credentials, and the Meterpreter session output (`getuid`, `sysinfo`).*
 
 ---
 
@@ -129,10 +114,6 @@ This task examined a scenario where an organization believed their `main` branch
 <img width="1020" height="460" alt="14b-grunner-shell-received" src="https://github.com/user-attachments/assets/0753beca-61e5-4857-9bf2-1e533c6baae2" />
 
 
-
-
-*Suggested screenshots: the merge request showing "Merged by Ana Tacker," the "Merge immediately" option, and the netcat listener catching the resulting shell.*
-
 ---
 
 ## 7. Environment Security — Compromising a Shared Build Runner
@@ -152,10 +133,6 @@ This task looked at what happens when development (DEV) and production (PROD) en
 
 <img width="1397" height="862" alt="14-production-job-log" src="https://github.com/user-attachments/assets/a015aaa8-232a-4ac2-ac19-207aefc7da8e" />
 
-
-
-*Suggested screenshots: the Environments page showing both production and staging, and the production job log showing the runner details alongside the `API_KEY` reference.*
-
 ---
 
 ## 8. Build Secrets Security — Exploiting Improperly Scoped CI/CD Variables
@@ -173,11 +150,6 @@ The final task examined whether CI/CD variables — GitLab's built-in mechanism 
 
 <img width="1397" height="910" alt="15-dev-branch-ci-file" src="https://github.com/user-attachments/assets/6ac11297-adba-40b6-aa4a-90c69590c3e5" />
 
-<img width="1401" height="860" alt="16-secrets-pipeline-triggered" src="https://github.com/user-attachments/assets/81563994-198d-42fd-94d1-18371e094021" />
-
-
-
-*Suggested screenshots: the modified `.gitlab-ci.yml` on the dev branch referencing the PROD variable, and the resulting job log showing the exposed API_KEY value.*
 
 ---
 
