@@ -82,6 +82,12 @@ Here I explored a "toxic combination" in CI/CD configuration: pipelines that aut
 - Committed the modified Jenkinsfile and opened a brand-new merge request back to the original repository, which triggered the on-merge build webhook.
 - Within seconds, Jenkins pulled my malicious Jenkinsfile, executed it on its build agent, and I received a fully interactive reverse shell — proving that CI/CD automation is effectively remote code execution as a built-in feature, and that any user able to influence pipeline code (even just in their own fork, prior to merge) can weaponize it.
 
+<img width="1416" height="502" alt="09-jagent-shell-received" src="https://github.com/user-attachments/assets/14d9765f-ca79-46ff-bf84-b3e5f64c2c45" />
+
+<img width="1917" height="306" alt="10-jagent-whoami-id" src="https://github.com/user-attachments/assets/5f6f8dc2-0b73-446c-ba61-e4fd6154810e" />
+
+
+
 *Suggested screenshots: the merge request in a "Ready to merge" state, and the netcat listener showing "Connection received."*
 
 ---
@@ -96,6 +102,9 @@ Rather than exploiting the pipeline logic, this task targeted the Jenkins build 
 - Switched to Metasploit and loaded the `exploit/multi/http/jenkins_script_console` module, which abuses Jenkins' built-in Groovy scripting console (accessible to authenticated users) to achieve remote code execution.
 - Configured the module with the correct target OS, a Linux-compatible payload (`linux/x64/meterpreter/bind_tcp`), the Jenkins credentials, and connection details (host, port, target URI).
 - Ran the exploit, which logged into Jenkins, obtained a CSRF token, uploaded a staged payload through the script console, and opened a fully-privileged Meterpreter session directly on the Jenkins server — demonstrating that weak build server credentials can lead to complete compromise of the infrastructure orchestrating every pipeline in the organization.
+
+<img width="1102" height="862" alt="11-jenkins-dashboard-login" src="https://github.com/user-attachments/assets/b498ed13-8973-46f1-9a12-6acbcf00d50f" />
+
 
 *Suggested screenshots: the Jenkins dashboard after logging in with default credentials, and the Meterpreter session output (`getuid`, `sysinfo`).*
 
@@ -113,6 +122,14 @@ This task examined a scenario where an organization believed their `main` branch
 - Approved and merged my own merge request, completely bypassing the intended two-person review process.
 - Since the project's GitLab Runner was configured to execute jobs only on the `main` branch, gaining the ability to push to `main` also gave me the ability to modify `.gitlab-ci.yml` and trigger arbitrary code execution on that runner — repeating the reverse shell technique from the previous task, this time by having my own malicious merge request self-approved and merged.
 - This highlighted a key lesson: **policy without technical enforcement is not real security.**
+
+<img width="1401" height="912" alt="12-merged-by-ana-tacker" src="https://github.com/user-attachments/assets/0de43fe1-a912-4e62-a4cd-960c44970113" />
+<img width="657" height="210" alt="13b-merge-immediately" src="https://github.com/user-attachments/assets/63ac946c-1a49-47dd-b183-2ded477e31cf" />
+
+<img width="1020" height="460" alt="14b-grunner-shell-received" src="https://github.com/user-attachments/assets/0753beca-61e5-4857-9bf2-1e533c6baae2" />
+
+
+
 
 *Suggested screenshots: the merge request showing "Merged by Ana Tacker," the "Merge immediately" option, and the netcat listener catching the resulting shell.*
 
@@ -153,6 +170,12 @@ The final task examined whether CI/CD variables — GitLab's built-in mechanism 
 - Committed the change through the same self-mergeable merge request process used in prior tasks, then triggered the pipeline and inspected the resulting job log.
 - The production `API_KEY` value was printed directly in the DEV pipeline's console output — confirming that naming a variable differently per environment provides no actual security if the CI system doesn't enforce which branches or environments are permitted to access which variables.
 - This tied together the core lesson of the entire room: **every layer of the pipeline — source, build process, build server, pipeline logic, environments, and secrets — must be secured independently, because a weakness in any single layer can compromise all the others.**
+
+<img width="1397" height="910" alt="15-dev-branch-ci-file" src="https://github.com/user-attachments/assets/6ac11297-adba-40b6-aa4a-90c69590c3e5" />
+
+<img width="1401" height="860" alt="16-secrets-pipeline-triggered" src="https://github.com/user-attachments/assets/81563994-198d-42fd-94d1-18371e094021" />
+
+
 
 *Suggested screenshots: the modified `.gitlab-ci.yml` on the dev branch referencing the PROD variable, and the resulting job log showing the exposed API_KEY value.*
 
