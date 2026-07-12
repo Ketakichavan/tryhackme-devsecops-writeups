@@ -1,1 +1,0 @@
-# cicd-security-writeup-tryhackme-
