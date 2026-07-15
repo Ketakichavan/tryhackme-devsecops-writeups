@@ -76,7 +76,8 @@ kubectl get secret terminal-creds -o jsonpath='{.data.username}' | base64 --deco
 kubectl get secret terminal-creds -o jsonpath='{.data.password}' | base64 --decode
 ```
 
-<img width="1302" height="721" alt="04-secret-discovery-decode-REDACTED" src="https://github.com/user-attachments/assets/0b7a1c8d-801c-413b-a574-bc7bbe82cffe" />
+<img width="1302" height="721" alt="04-secret-discovery-decode-REDACTED" src="https://github.com/user-attachments/assets/9eb5425e-6b1e-4875-b5d5-b254cb3b9e69" />
+
 
 
 The decoded credentials are used to log into the terminal application, and the flag is retrieved.
