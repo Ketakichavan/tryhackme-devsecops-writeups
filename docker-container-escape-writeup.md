@@ -6,7 +6,7 @@ Four separate escape techniques are covered below. Each one abuses a different D
 
 ---
 
-## Task 3 — Escaping via Privileged Container Capabilities (cgroups abuse)
+## Task 1 — Escaping via Privileged Container Capabilities (cgroups abuse)
 
 **The idea:** When a container runs in `--privileged` mode, it skips the usual isolation layer and talks to the host's kernel almost directly. One of the things it can touch is **cgroups** — a kernel feature that manages groups of processes. Cgroups have a setting called `release_agent`: a script the *host kernel itself* runs whenever a cgroup finishes up. Since a privileged container can set what that script is, the host can be tricked into running arbitrary code as root.
 
@@ -58,11 +58,12 @@ Four separate escape techniques are covered below. Each one abuses a different D
 
 **Why this works:** The `release_agent` script is executed by the *host kernel*, not the container, so any command written there runs with full host privileges — completely bypassing the container boundary.
 
-![Task 3 - cgroups exploit](./screenshots/task3-cgroups-exploit.png)
+<img width="1017" height="292" alt="task3-cgroups-exploit" src="https://github.com/user-attachments/assets/7634ffc6-ad77-4242-88b7-40dea08b1a01" />
+
 
 ---
 
-## Task 4 — Escaping via an Exposed Docker Socket
+## Task 2 — Escaping via an Exposed Docker Socket
 
 **The idea:** Docker containers normally talk to the Docker Engine through a socket file (`docker.sock`), similar to how two programs might pass messages back and forth on the same machine instead of over a network. If that socket file gets mounted *inside* a container, the container can issue commands directly to the **host's** Docker Engine — meaning it can ask Docker to spin up a brand new container and mount the entire host filesystem into it.
 
@@ -100,11 +101,12 @@ Four separate escape techniques are covered below. Each one abuses a different D
 
 **Why this works:** Anyone who can talk to the Docker socket effectively has the same power as Docker itself — which runs as root on the host. Mounting the socket into a container is functionally the same as giving that container root on the host.
 
-![Task 4 - Docker socket exploit](./screenshots/task4-docker-socket-exploit.png)
+<img width="1015" height="296" alt="task4-docker-socket-exploit" src="https://github.com/user-attachments/assets/b024510c-0afe-43f7-b0aa-4923ce3982bf" />
+
 
 ---
 
-## Task 5 — Remote Code Execution via an Exposed Docker Daemon (TCP)
+## Task 3 — Remote Code Execution via an Exposed Docker Daemon (TCP)
 
 **The idea:** Docker doesn't just use local sockets — it can also be configured to accept commands over the network via TCP (commonly port `2375`). This is meant for legitimate remote management (e.g. deployment tools like Portainer or Jenkins), but if it's exposed without authentication, anyone on the network can control it.
 
@@ -132,11 +134,12 @@ Four separate escape techniques are covered below. Each one abuses a different D
 
 **Default Docker Engine port:** `2375`
 
-![Task 5 - Remote Docker daemon](./screenshots/task5-remote-docker-daemon.png)
+<img width="1395" height="822" alt="task5-remote-docker-daemon" src="https://github.com/user-attachments/assets/87712b6a-2b40-4760-9917-2cbd1f77494d" />
+
 
 ---
 
-## Task 6 — Abusing Shared Namespaces
+## Task 4 — Abusing Shared Namespaces
 
 **The idea:** Containers normally can't see host processes because they live in a separate "namespace" — each container gets its own private view of what's running on the system. Some containers, however, are deliberately configured to share the host's namespaces (for example, to support debugging tools). If this is the case, the container can actually see host processes when running `ps aux` — including PID 1, which is always the very first process the system started.
 
@@ -175,9 +178,10 @@ Four separate escape techniques are covered below. Each one abuses a different D
 
 **Why this works:** Namespaces are the actual mechanism that makes containerization possible in the first place. If a container shares the host's PID namespace (visible via `ps aux`) and has sufficient capabilities, tools like `nsenter` can be used to join the host's other namespaces too — undoing the isolation Docker is supposed to provide.
 
-![Task 6 - ps aux showing host processes](./screenshots/task6-ps-aux-host-processes.png)
+<img width="1077" height="562" alt="task6-ps-aux-host-processes" src="https://github.com/user-attachments/assets/19f9d915-de90-4b95-8d70-bb96d7e247e4" />
 
-![Task 6 - nsenter and hostname change](./screenshots/task6-nsenter-hostname.png)
+<img width="947" height="106" alt="task6-nsenter-hostname" src="https://github.com/user-attachments/assets/d968e70d-016b-4b1a-93c6-16e43364dfb0" />
+
 
 ---
 
